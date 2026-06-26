@@ -153,6 +153,13 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
         <div className="story-content text-right" dir="rtl" id="story-body">
           {formatContent(chapter.content)}
         </div>
+
+        {/* Subtle Athar Signature */}
+        <div className="mt-16 pt-8 border-t border-dashed border-slate-200/10 dark:border-slate-800/40 text-center select-none">
+          <p className={`text-xs font-medium tracking-wide opacity-30 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>
+            نسألكم الدعاء ، أثَر | ATHAR
+          </p>
+        </div>
       </motion.div>
 
       {/* Floating Share Button */}

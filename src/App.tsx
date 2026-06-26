@@ -19,6 +19,7 @@ import { chapter12 } from "./data/chapters/chapter12";
 import { chapter13 } from "./data/chapters/chapter13";
 import { chapter14 } from "./data/chapters/chapter14";
 import StoryView from "./components/StoryView";
+import AboutModal from "./components/AboutModal";
 import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { martyrs } from "./data/martyrs";
@@ -39,6 +40,7 @@ export default function App() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isMartyrsOpen, setIsMartyrsOpen] = useState(false);
   
   const [martyrSearchQuery, setMartyrSearchQuery] = useState("");
@@ -116,7 +118,17 @@ export default function App() {
         >
           <Menu size={24} />
         </button>
-        <h2 className={`text-lg font-amiri font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>ملحمة كربلاء</h2>
+        <h2 className={`text-base font-amiri font-bold flex items-center gap-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
+          <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-500/20 shadow-md">
+            <img 
+              src="/logo.jpg" 
+              alt="أثر" 
+              className="w-full h-full object-cover animate-pulse" 
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <span>أثَر <span className="opacity-30 font-sans">|</span> ملحمة كربلاء</span>
+        </h2>
         <div className="flex gap-1">
           <button 
             onClick={() => setIsMartyrsOpen(true)}
@@ -144,33 +156,52 @@ export default function App() {
               className={`fixed lg:relative inset-y-0 right-0 w-80 border-l z-50 flex flex-col transition-all ${!isSidebarOpen && 'hidden lg:flex'} ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}
               id="sidebar"
             >
-              <div className={`p-6 flex items-center justify-between border-b ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
-                <div className="flex items-center gap-3 text-red-500">
-                  <ScrollText size={24} />
-                  <h2 className={`text-xl font-amiri font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>فصول الرواية</h2>
+              {/* Sidebar Header with Athar Brand */}
+              <div className={`px-6 py-4 border-b flex flex-col gap-2 ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/40 border-slate-800'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl overflow-hidden border border-amber-500/20 shadow-lg shrink-0">
+                      <img 
+                        src="/logo.jpg" 
+                        alt="أثر" 
+                        className="w-full h-full object-cover" 
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className={`text-sm font-sans font-black tracking-wide ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>أثَر</span>
+                      <span className={`text-[10px] font-amiri font-bold leading-none ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>منصة أثَر الرقمية</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => setIsMartyrsOpen(true)}
+                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                      title="سجل الشهداء"
+                    >
+                      <Users size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setIsSettingsOpen(true)}
+                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                      title="الإعدادات"
+                    >
+                      <Settings size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setIsSidebarOpen(false)}
+                      className={`lg:hidden p-1.5 transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => setIsMartyrsOpen(true)}
-                    className={`hidden lg:flex p-2 hover:bg-slate-800 rounded-full transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-400 hover:text-white'}`}
-                    title="سجل الشهداء"
-                  >
-                    <Users size={20} />
-                  </button>
-                  <button 
-                    onClick={() => setIsSettingsOpen(true)}
-                    className={`hidden lg:flex p-2 hover:bg-slate-800 rounded-full transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900 hover:bg-slate-100' : 'text-slate-400 hover:text-white'}`}
-                    title="الإعدادات"
-                  >
-                    <Settings size={20} />
-                  </button>
-                  <button 
-                    onClick={() => setIsSidebarOpen(false)}
-                    className={`lg:hidden p-2 transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
+              </div>
+
+              {/* Chapter Header */}
+              <div className={`px-6 py-3 border-b flex items-center gap-2 ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
+                <ScrollText size={18} className="text-red-500 animate-pulse" />
+                <h2 className={`text-sm font-bold font-amiri ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}>فصول الرواية المباركة</h2>
               </div>
 
               <nav className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -247,10 +278,13 @@ export default function App() {
             </button>
           </div>
 
-          <footer className={`max-w-4xl mx-auto px-6 py-12 border-t text-center ${theme === 'light' ? 'border-slate-200 text-slate-500' : 'border-slate-900/50 text-slate-600'}`}>
+          <footer className={`max-w-4xl mx-auto px-6 py-12 border-t text-center ${theme === 'light' ? 'border-slate-200 text-slate-500' : 'border-slate-900/50 text-slate-600'} flex flex-col items-center gap-4`}>
             <p className="text-sm italic font-amiri">
               "يا بن رسول الله، إن جدي قد بشرني برؤياك مرملاً بالدماء..."
             </p>
+            <span className="text-[11px] font-bold tracking-wide opacity-25 select-none font-sans mt-2">
+              نسألكم الدعاء ، أثَر | ATHAR
+            </span>
           </footer>
         </main>
       </div>
@@ -314,6 +348,22 @@ export default function App() {
                       <Moon size={18} /> داكن
                     </button>
                   </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                  <button 
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsAboutOpen(true);
+                    }}
+                    className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                      theme === 'light' 
+                        ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-800' 
+                        : 'bg-amber-950/20 hover:bg-amber-950/40 border-amber-950/30 text-amber-400'
+                    }`}
+                  >
+                    ✨ ما هو أثَر؟ (حول التطبيق)
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -552,6 +602,13 @@ export default function App() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* About Platform Modal */}
+      <AnimatePresence>
+        {isAboutOpen && (
+          <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} theme={theme} />
         )}
       </AnimatePresence>
 

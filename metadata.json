@@ -1,5 +1,5 @@
 {
-  "name": "ملحمة كربلاء: رواية بحار الأنوار",
+  "name": "أثَر | ملحمة كربلاء",
   "description": "تطبيق يسرد واقعة الإمام الحسين (ع) من كتاب بحار الأنوار بتفصيل ودقة.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
