@@ -19,7 +19,7 @@ import { chapter12 } from "./data/chapters/chapter12";
 import { chapter13 } from "./data/chapters/chapter13";
 import { chapter14 } from "./data/chapters/chapter14";
 import StoryView from "./components/StoryView";
-import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users } from "lucide-react";
+import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { martyrs } from "./data/martyrs";
 
@@ -40,6 +40,24 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMartyrsOpen, setIsMartyrsOpen] = useState(false);
+  
+  const [martyrSearchQuery, setMartyrSearchQuery] = useState("");
+  const [martyrSelectedCategory, setMartyrSelectedCategory] = useState<string>("all");
+  
+  const filteredMartyrs = martyrs.filter(martyr => {
+    const matchesSearch = 
+      martyr.name.toLowerCase().includes(martyrSearchQuery.toLowerCase()) ||
+      martyr.title.toLowerCase().includes(martyrSearchQuery.toLowerCase()) ||
+      martyr.description.toLowerCase().includes(martyrSearchQuery.toLowerCase()) ||
+      martyr.deathMethod.toLowerCase().includes(martyrSearchQuery.toLowerCase()) ||
+      (martyr.killer && martyr.killer.toLowerCase().includes(martyrSearchQuery.toLowerCase()));
+    
+    const matchesCategory = 
+      martyrSelectedCategory === "all" || 
+      martyr.category === martyrSelectedCategory;
+      
+    return matchesSearch && matchesCategory;
+  });
   
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('karbala_font_size') || 'text-xl');
   const [theme, setTheme] = useState(() => localStorage.getItem('karbala_theme') || 'dark');
@@ -309,33 +327,155 @@ export default function App() {
       <AnimatePresence>
         {isMartyrsOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMartyrsOpen(false)} />
+            <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={() => setIsMartyrsOpen(false)} />
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className={`relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden ${theme === 'light' ? 'bg-white' : 'bg-slate-900 border border-slate-700'}`}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className={`relative w-full max-w-4xl h-[90vh] md:h-[80vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-700/80'}`}
             >
-              <div className={`p-6 border-b flex items-center justify-between shrink-0 ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
+              {/* Modal Header */}
+              <div className={`p-6 border-b flex items-center justify-between shrink-0 ${theme === 'light' ? 'border-slate-100' : 'border-slate-800'}`}>
                 <div className="flex items-center gap-3 text-red-500">
-                  <Users size={24} />
-                  <h3 className={`text-2xl font-bold font-amiri ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>سجل الشهداء (معجم الشخصيات)</h3>
+                  <Users size={28} className="animate-pulse" />
+                  <div>
+                    <h3 className={`text-2xl font-bold font-amiri ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>سجل الشهداء (معجم الشخصيات)</h3>
+                    <p className={`text-xs ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>شخصيات استشهدت في واقعة الطف وما قبلها</p>
+                  </div>
                 </div>
-                <button onClick={() => setIsMartyrsOpen(false)} className={`p-2 rounded-full ${theme === 'light' ? 'hover:bg-slate-100' : 'hover:bg-slate-800 text-slate-400'}`}>
+                <button 
+                  onClick={() => {
+                    setIsMartyrsOpen(false);
+                    setMartyrSearchQuery("");
+                    setMartyrSelectedCategory("all");
+                  }} 
+                  className={`p-2 rounded-full transition-colors ${theme === 'light' ? 'hover:bg-slate-100 text-slate-500 hover:text-slate-800' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                >
                   <X size={20} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {martyrs.map(martyr => (
-                    <div key={martyr.id} className={`p-4 rounded-xl border transition-all ${theme === 'light' ? 'bg-slate-50 border-slate-200 hover:border-red-300' : 'bg-slate-800/50 border-slate-700 hover:border-red-900/50'}`}>
-                      <h4 className={`text-lg font-amiri font-bold mb-1 ${theme === 'light' ? 'text-red-700' : 'text-red-400'}`}>{martyr.name}</h4>
-                      <p className={`text-xs mb-3 font-bold ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>{martyr.title}</p>
-                      <p className={`text-sm leading-relaxed ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>{martyr.description}</p>
-                    </div>
+              {/* Search & Filter Controls */}
+              <div className={`p-4 border-b shrink-0 space-y-4 ${theme === 'light' ? 'bg-slate-50/50 border-slate-100' : 'bg-slate-950/20 border-slate-800'}`}>
+                {/* Search Input */}
+                <div className="relative">
+                  <Search className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 ${theme === 'light' ? 'text-slate-400' : 'text-slate-500'}`} />
+                  <input
+                    type="text"
+                    placeholder="ابحث باسم الشهيد، اللقب، طريقة الاستشهاد أو القاتل..."
+                    value={martyrSearchQuery}
+                    onChange={(e) => setMartyrSearchQuery(e.target.value)}
+                    className={`w-full pr-10 pl-4 py-2.5 rounded-xl border text-sm font-medium transition-all outline-none ${theme === 'light' ? 'bg-white border-slate-200 text-slate-800 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'bg-slate-950 border-slate-800 text-white focus:border-red-900/50 focus:ring-2 focus:ring-red-950/30'}`}
+                  />
+                  {martyrSearchQuery && (
+                    <button 
+                      onClick={() => setMartyrSearchQuery("")}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      مسح
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Categories */}
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className={`text-xs font-bold flex items-center gap-1 ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>
+                    <Filter size={14} /> التصنيف:
+                  </span>
+                  {[
+                    { id: "all", label: "الكل" },
+                    { id: "أهل البيت (عليهم السلام)", label: "أهل البيت (ع)" },
+                    { id: "الأصحاب الأنصار", label: "الأصحاب الأنصار" },
+                    { id: "شهداء ما قبل الطف", label: "شهداء ما قبل الطف" },
+                    { id: "النساء والشهداء الآخرون", label: "النساء والشهداء الآخرون" }
+                  ].map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setMartyrSelectedCategory(cat.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        martyrSelectedCategory === cat.id
+                          ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
+                          : theme === 'light'
+                            ? "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                            : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Martyrs List */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {filteredMartyrs.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredMartyrs.map(martyr => (
+                      <div 
+                        key={martyr.id} 
+                        className={`p-5 rounded-xl border flex flex-col gap-3 transition-all duration-300 ${
+                          theme === 'light' 
+                            ? 'bg-slate-50/50 border-slate-200/80 hover:border-red-200 hover:bg-slate-50 hover:shadow-md' 
+                            : 'bg-slate-800/40 border-slate-800/80 hover:border-red-900/30 hover:bg-slate-800/80 hover:shadow-lg'
+                        }`}
+                      >
+                        {/* Header Details */}
+                        <div>
+                          <div className="flex justify-between items-start gap-2 mb-1">
+                            <h4 className={`text-xl font-amiri font-bold ${theme === 'light' ? 'text-red-700' : 'text-red-400'}`}>{martyr.name}</h4>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide shrink-0 ${
+                              martyr.category === "أهل البيت (عليهم السلام)"
+                                ? "bg-green-100 text-green-800 dark:bg-green-950/40 dark:text-green-400"
+                                : martyr.category === "الأصحاب الأنصار"
+                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400"
+                                  : martyr.category === "شهداء ما قبل الطف"
+                                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-400"
+                                    : "bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-400"
+                            }`}>
+                              {martyr.category}
+                            </span>
+                          </div>
+                          <p className={`text-xs font-bold leading-relaxed mb-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>{martyr.title}</p>
+                        </div>
+
+                        {/* Description */}
+                        <p className={`text-sm leading-relaxed ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+                          {martyr.description}
+                        </p>
+
+                        {/* Martyr Details Grid */}
+                        <div className={`mt-auto pt-3 border-t grid grid-cols-2 gap-x-4 gap-y-2 text-xs ${theme === 'light' ? 'border-slate-200/60 text-slate-600' : 'border-slate-800 text-slate-400'}`}>
+                          <div>
+                            <span className="font-bold block text-[10px] text-red-500 uppercase tracking-wider">الموعد:</span>
+                            <span>{martyr.timing}</span>
+                          </div>
+                          <div>
+                            <span className="font-bold block text-[10px] text-red-500 uppercase tracking-wider">المكان:</span>
+                            <span>{martyr.location}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="font-bold block text-[10px] text-red-500 uppercase tracking-wider">القاتل:</span>
+                            <span>{martyr.killer || "جيش الأعداء الكافر"}</span>
+                          </div>
+                          <div className={`col-span-2 p-2.5 rounded-lg text-xs leading-relaxed mt-1 border ${
+                            theme === 'light' 
+                              ? 'bg-red-50/30 border-red-100 text-slate-700' 
+                              : 'bg-red-950/10 border-red-950/30 text-slate-300'
+                          }`}>
+                            <strong className="font-bold block text-[10px] text-red-500 mb-0.5">تفاصيل الاستشهاد:</strong>
+                            {martyr.deathMethod}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                    <Users size={48} className="text-slate-600 mb-3 animate-bounce" />
+                    <p className={`text-lg font-bold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>لا توجد نتائج مطابقة</p>
+                    <p className={`text-sm mt-1 max-w-md ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>لم نعثر على أي شهيد يطابق "{martyrSearchQuery}" في تصنيف "{martyrSelectedCategory === 'all' ? 'الكل' : martyrSelectedCategory}". جرب كلمات بحث أخرى.</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

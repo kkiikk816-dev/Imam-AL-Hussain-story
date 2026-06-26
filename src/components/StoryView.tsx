@@ -7,6 +7,7 @@ interface StoryViewProps {
   chapter: Chapter;
   fontSizeClass?: string;
   theme?: string;
+  key?: string | number;
 }
 
 export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = "dark" }: StoryViewProps) {
