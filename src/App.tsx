@@ -20,16 +20,21 @@ import { chapter13 } from "./data/chapters/chapter13";
 import { chapter14 } from "./data/chapters/chapter14";
 import StoryView from "./components/StoryView";
 import AboutModal from "./components/AboutModal";
-import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter } from "lucide-react";
+import JourneyTimeline from "./components/JourneyTimeline";
+import AmbientAudio from "./components/AmbientAudio";
+import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter, CalendarDays, Map } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { martyrs } from "./data/martyrs";
+import { chapter15 } from "./data/chapters/chapter15";
+import { chapter16 } from "./data/chapters/chapter16";
+import { chapter17 } from "./data/chapters/chapter17";
 
 export default function App() {
   const chapters = [
     chapter1, chapter2, chapter3, chapter4,
     chapter5, chapter6, chapter7, chapter8,
     chapter9, chapter10, chapter11, chapter12,
-    chapter13, chapter14
+    chapter13, chapter14, chapter15, chapter16, chapter17
   ];
 
   const [currentChapterIndex, setCurrentChapterIndex] = useState(() => {
@@ -41,6 +46,7 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [isMartyrsOpen, setIsMartyrsOpen] = useState(false);
   
   const [martyrSearchQuery, setMartyrSearchQuery] = useState("");
@@ -130,6 +136,14 @@ export default function App() {
           <span>أثَر <span className="opacity-30 font-sans">|</span> ملحمة كربلاء</span>
         </h2>
         <div className="flex gap-1">
+          <AmbientAudio theme={theme} />
+          <button 
+            onClick={() => setIsTimelineOpen(true)}
+            className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
+            title="محطات المسير"
+          >
+            <Map size={24} />
+          </button>
           <button 
             onClick={() => setIsMartyrsOpen(true)}
             className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
@@ -174,6 +188,14 @@ export default function App() {
                     </div>
                   </div>
                   <div className="flex gap-1">
+                    <AmbientAudio theme={theme} />
+                    <button 
+                      onClick={() => setIsTimelineOpen(true)}
+                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                      title="محطات المسير"
+                    >
+                      <Map size={18} />
+                    </button>
                     <button 
                       onClick={() => setIsMartyrsOpen(true)}
                       className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
@@ -279,12 +301,14 @@ export default function App() {
           </div>
 
           <footer className={`max-w-4xl mx-auto px-6 py-12 border-t text-center ${theme === 'light' ? 'border-slate-200 text-slate-500' : 'border-slate-900/50 text-slate-600'} flex flex-col items-center gap-4`}>
-            <p className="text-sm italic font-amiri">
-              "يا بن رسول الله، إن جدي قد بشرني برؤياك مرملاً بالدماء..."
-            </p>
-            <span className="text-[11px] font-bold tracking-wide opacity-25 select-none font-sans mt-2">
+            <span className="text-[11px] font-bold tracking-wide opacity-25 select-none font-sans mb-2">
               نسألكم الدعاء ، أثَر | ATHAR
             </span>
+            {chapters[currentChapterIndex].quote && (
+              <p className="text-sm italic font-amiri opacity-75">
+                "{chapters[currentChapterIndex].quote}"
+              </p>
+            )}
           </footer>
         </main>
       </div>
@@ -602,6 +626,17 @@ export default function App() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isTimelineOpen && (
+          <JourneyTimeline 
+            theme={theme} 
+            onClose={() => setIsTimelineOpen(false)} 
+            chapters={chapters} 
+            onSelectChapter={setCurrentChapterIndex} 
+          />
         )}
       </AnimatePresence>
 

@@ -76,9 +76,12 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
       // Check if it's a heading-like bold line
       if (paragraph.startsWith("**") && paragraph.endsWith("**") && paragraph.split("**").length === 3) {
         return (
-          <h3 key={idx} className={`font-amiri font-bold text-red-400 mt-12 mb-6 border-r-4 border-red-800 pr-4 ${fontSizeClass === 'text-xl' ? 'text-2xl' : fontSizeClass === 'text-2xl' ? 'text-3xl' : 'text-4xl'}`}>
-            {paragraph.replace(/\*\*/g, '')}
-          </h3>
+          <div key={idx} className="flex flex-col items-center justify-center mt-16 mb-10">
+            <h3 className={`font-amiri font-bold text-center ${theme === 'light' ? 'text-slate-900' : 'text-slate-100'} ${fontSizeClass === 'text-xl' ? 'text-2xl' : fontSizeClass === 'text-2xl' ? 'text-3xl' : 'text-4xl'}`}>
+              {paragraph.replace(/\*\*/g, '')}
+            </h3>
+            <div className={`w-16 h-px mt-6 ${theme === 'light' ? 'bg-red-900/20' : 'bg-red-500/20'}`} />
+          </div>
         );
       }
 
@@ -88,17 +91,20 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
           if (line.includes("***")) {
             const parts = line.split("***");
             return (
-              <div key={lineIdx} className={`flex justify-center gap-8 my-2 font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} ${fontSizeClass}`}>
-                <span className="w-1/2 text-left">{parts[0].trim()}</span>
-                <span className="w-1/2 text-right">{parts[1].trim()}</span>
+              <div key={lineIdx} className={`flex justify-center gap-12 my-4 font-amiri ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'} ${fontSizeClass}`}>
+                <span className="w-1/2 text-left leading-loose">{parts[0].trim()}</span>
+                <span className="w-1/2 text-right leading-loose">{parts[1].trim()}</span>
               </div>
             );
           }
-          return <div key={lineIdx} className={`text-center font-amiri my-2 ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} ${fontSizeClass}`}>{line}</div>;
+          return <div key={lineIdx} className={`text-center font-amiri my-4 leading-loose ${theme === 'light' ? 'text-slate-700' : 'text-slate-400'} ${fontSizeClass}`}>{line}</div>;
         });
         return (
-          <div key={idx} className={`my-8 p-6 rounded-2xl border ${theme === 'light' ? 'bg-slate-100 border-slate-300' : 'bg-slate-900/50 border-slate-800'}`}>
+          <div key={idx} className={`my-10 p-8 rounded-sm border-y ${theme === 'light' ? 'bg-[#faf9f7] border-red-900/10' : 'bg-[#0f1115] border-red-900/30'} relative overflow-hidden`}>
+            {/* Subtle decorative element */}
+            <div className={`absolute top-0 right-0 w-full h-1 ${theme === 'light' ? 'bg-gradient-to-l from-transparent via-red-900/5 to-transparent' : 'bg-gradient-to-l from-transparent via-red-500/10 to-transparent'}`} />
             {verses}
+            <div className={`absolute bottom-0 right-0 w-full h-1 ${theme === 'light' ? 'bg-gradient-to-l from-transparent via-red-900/5 to-transparent' : 'bg-gradient-to-l from-transparent via-red-500/10 to-transparent'}`} />
           </div>
         );
       }
@@ -106,10 +112,10 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
       // Normal paragraph with inline bold
       const parts = paragraph.split("**");
       return (
-        <p key={idx} className={`mb-6 leading-relaxed font-sans ${theme === 'light' ? 'text-slate-800' : 'text-slate-300'} ${fontSizeClass}`}>
+        <p key={idx} className={`mb-8 leading-[2.2] font-amiri text-justify ${theme === 'light' ? 'text-slate-800' : 'text-slate-300'} ${fontSizeClass}`}>
           {parts.map((part, i) => 
             i % 2 === 1 ? (
-              <strong key={i} className={`font-bold ${theme === 'light' ? 'text-red-700' : 'text-red-300'}`}>
+              <strong key={i} className={`font-bold mx-1 drop-shadow-sm ${theme === 'light' ? 'text-red-900' : 'text-red-400'}`}>
                 {part}
               </strong>
             ) : part.split('\n').map((line, lineIdx) => (
@@ -137,17 +143,22 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
         <header className="mb-12 text-center">
           {chapter.description && (
             <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className={`inline-block px-4 py-1 rounded-full text-sm font-medium mb-4 border ${theme === 'light' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-red-950/30 text-red-500 border-red-900/50'}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`inline-block px-5 py-1.5 rounded-full text-sm font-medium mb-6 border ${theme === 'light' ? 'bg-red-50 text-red-900/70 border-red-900/10' : 'bg-red-950/20 text-red-400/70 border-red-900/30'}`}
             >
               {chapter.description}
             </motion.div>
           )}
-          <h1 className={`text-4xl md:text-5xl font-amiri font-bold mb-6 tracking-tight leading-tight ${theme === 'light' ? 'text-slate-900' : 'text-white'}`} id="chapter-title">
+          <h1 className={`text-4xl md:text-5xl lg:text-6xl font-amiri font-bold mb-8 tracking-tight leading-tight ${theme === 'light' ? 'text-slate-900' : 'text-white'} drop-shadow-sm`} id="chapter-title">
             {chapter.title}
           </h1>
-          <div className="w-24 h-1 bg-red-900 mx-auto rounded-full" />
+          <div className="flex justify-center items-center gap-4 mx-auto mb-16">
+            <div className={`w-16 h-px ${theme === 'light' ? 'bg-red-900/20' : 'bg-red-500/30'}`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${theme === 'light' ? 'bg-red-900/40' : 'bg-red-500/50'}`} />
+            <div className={`w-16 h-px ${theme === 'light' ? 'bg-red-900/20' : 'bg-red-500/30'}`} />
+          </div>
         </header>
 
         <div className="story-content text-right" dir="rtl" id="story-body">

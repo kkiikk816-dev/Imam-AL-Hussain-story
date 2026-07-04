@@ -8,6 +8,7 @@ export interface Chapter {
   title: string;
   content: string;
   description: string;
+  quote?: string;
 }
 
 export interface AppState {
