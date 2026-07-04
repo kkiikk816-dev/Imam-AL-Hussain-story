@@ -72,8 +72,11 @@ export default function JourneyTimeline({ theme, onClose, chapters, onSelectChap
                 className="relative flex items-start gap-6 md:gap-8"
               >
                 <div className={`relative z-10 flex flex-col items-center shrink-0 w-8 md:w-12 mt-1`}>
-                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full border-4 flex items-center justify-center ${theme === 'light' ? 'bg-white border-red-700' : 'bg-slate-900 border-red-500'}`}>
-                    <div className={`w-2 h-2 rounded-full ${theme === 'light' ? 'bg-red-700' : 'bg-red-500'}`} />
+                  <div className="relative flex items-center justify-center w-6 h-6 md:w-8 md:h-8">
+                    <div className={`absolute inset-0 rounded-full animate-ping opacity-30 ${theme === 'light' ? 'bg-red-500' : 'bg-red-500'}`} />
+                    <div className={`relative z-10 w-full h-full rounded-full border-4 flex items-center justify-center ${theme === 'light' ? 'bg-white border-red-700 shadow-sm' : 'bg-slate-900 border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)]'}`}>
+                      <div className={`w-2 h-2 rounded-full ${theme === 'light' ? 'bg-red-700' : 'bg-red-500'}`} />
+                    </div>
                   </div>
                 </div>
 

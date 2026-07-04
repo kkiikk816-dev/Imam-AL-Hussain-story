@@ -22,7 +22,9 @@ import StoryView from "./components/StoryView";
 import AboutModal from "./components/AboutModal";
 import JourneyTimeline from "./components/JourneyTimeline";
 import AmbientAudio from "./components/AmbientAudio";
-import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter, CalendarDays, Map } from "lucide-react";
+import DiwanModal from "./components/DiwanModal";
+import ZiyaratModal from "./components/ZiyaratModal";
+import { BookOpen, Menu, X, ScrollText, History, ChevronRight, ChevronLeft, Settings, Type, Moon, Sun, MonitorPlay, Users, Search, Filter, CalendarDays, Map, Info, Feather, Book } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { martyrs } from "./data/martyrs";
 import { chapter15 } from "./data/chapters/chapter15";
@@ -48,6 +50,8 @@ export default function App() {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [isMartyrsOpen, setIsMartyrsOpen] = useState(false);
+  const [isDiwanOpen, setIsDiwanOpen] = useState(false);
+  const [isZiyaratOpen, setIsZiyaratOpen] = useState(false);
   
   const [martyrSearchQuery, setMartyrSearchQuery] = useState("");
   const [martyrSelectedCategory, setMartyrSelectedCategory] = useState<string>("all");
@@ -106,7 +110,7 @@ export default function App() {
   const progressPercentage = ((currentChapterIndex + 1) / chapters.length) * 100;
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-red-900/40 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-950'}`}>
+    <div className={`h-screen flex flex-col font-sans overflow-hidden selection:bg-red-900/40 ${theme === 'light' ? 'bg-slate-50' : 'bg-slate-950'}`}>
       
       {/* Top Progress Bar */}
       <div className="fixed top-0 left-0 h-1.5 w-full z-[60] bg-slate-800">
@@ -116,50 +120,33 @@ export default function App() {
         />
       </div>
 
-      {/* Mobile Header */}
-      <header className={`lg:hidden flex items-center justify-between p-4 border-b sticky top-0 z-50 backdrop-blur-md ${theme === 'light' ? 'bg-white/80 border-slate-200' : 'bg-slate-950/80 border-slate-900'}`}>
-        <button 
-          onClick={() => setIsSidebarOpen(true)}
-          className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-        >
-          <Menu size={24} />
-        </button>
-        <h2 className={`text-base font-amiri font-bold flex items-center gap-2 ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
-          <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-500/20 shadow-md">
-            <img 
-              src="/logo.jpg" 
-              alt="أثر" 
-              className="w-full h-full object-cover animate-pulse" 
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          <span>أثَر <span className="opacity-30 font-sans">|</span> ملحمة كربلاء</span>
-        </h2>
-        <div className="flex gap-1">
-          <AmbientAudio theme={theme} />
-          <button 
-            onClick={() => setIsTimelineOpen(true)}
-            className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-            title="محطات المسير"
-          >
-            <Map size={24} />
-          </button>
-          <button 
-            onClick={() => setIsMartyrsOpen(true)}
-            className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-          >
-            <Users size={24} />
-          </button>
-          <button 
-            onClick={() => setIsSettingsOpen(true)}
-            className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-          >
-            <Settings size={24} />
-          </button>
-        </div>
+      {/* The Master Header */}
+      <header className={`flex-shrink-0 sticky top-0 z-50 flex items-center justify-between px-4 py-2 border-b backdrop-blur-md ${theme === 'light' ? 'bg-white/80 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'}`}>
+         {/* Right: Menu & Logo */}
+         <div className="flex items-center gap-3 w-1/3">
+           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}>
+             <Menu size={22} />
+           </button>
+           <span className={`text-base font-sans font-black tracking-wide ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>أثَر</span>
+         </div>
+         {/* Center: Title Capsule */}
+         <div className="flex justify-center w-1/3">
+           <div className={`px-4 py-1.5 rounded-full text-xs font-amiri font-bold border transition-colors ${theme === 'light' ? 'bg-white/60 border-slate-200 text-slate-800 shadow-sm' : 'bg-white/5 border-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.05)] backdrop-blur-md'}`}>
+             {currentChapter.title.split(':')[0]}
+           </div>
+         </div>
+         {/* Left: Preferences */}
+         <div className="flex gap-2 items-center justify-end w-1/3">
+           <button onClick={() => setIsSettingsOpen(true)} className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`} title="الإعدادات (حجم الخط والمظهر)">
+             <Type size={18} />
+           </button>
+           <button onClick={() => setIsAboutOpen(true)} className={`p-2 transition-colors ${theme === 'light' ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`} title="حول المنصة">
+             <Info size={18} />
+           </button>
+         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Sidebar */}
         <AnimatePresence>
           {(isSidebarOpen || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
@@ -167,91 +154,119 @@ export default function App() {
               initial={{ x: 300 }}
               animate={{ x: 0 }}
               exit={{ x: 300 }}
-              className={`fixed lg:relative inset-y-0 right-0 w-80 border-l z-50 flex flex-col transition-all ${!isSidebarOpen && 'hidden lg:flex'} ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}
-              id="sidebar"
+              className={`fixed lg:relative inset-y-0 right-0 w-80 border-l z-50 flex flex-col transition-all ${!isSidebarOpen ? 'hidden lg:flex' : ''} ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}
             >
-              {/* Sidebar Header with Athar Brand */}
-              <div className={`px-6 py-4 border-b flex flex-col gap-2 ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/40 border-slate-800'}`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl overflow-hidden border border-amber-500/20 shadow-lg shrink-0">
-                      <img 
-                        src="/logo.jpg" 
-                        alt="أثر" 
-                        className="w-full h-full object-cover" 
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className={`text-sm font-sans font-black tracking-wide ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>أثَر</span>
-                      <span className={`text-[10px] font-amiri font-bold leading-none ${theme === 'light' ? 'text-slate-500' : 'text-slate-400'}`}>منصة أثَر الرقمية</span>
-                    </div>
+                   {/* Feature Hub Tabs */}
+              <div className={`p-4 border-b flex gap-3 shrink-0 ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/50 border-slate-800'}`}>
+                <button 
+                  onClick={() => setIsMartyrsOpen(true)}
+                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all group ${theme === 'light' ? 'bg-white hover:bg-slate-100 border border-slate-200' : 'bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50'}`}
+                >
+                  <div className={`p-2 rounded-full ${theme === 'light' ? 'bg-red-50 text-red-600' : 'bg-red-900/30 text-red-400'}`}>
+                    <Users size={20} />
                   </div>
-                  <div className="flex gap-1">
-                    <AmbientAudio theme={theme} />
-                    <button 
-                      onClick={() => setIsTimelineOpen(true)}
-                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
-                      title="محطات المسير"
-                    >
-                      <Map size={18} />
-                    </button>
-                    <button 
-                      onClick={() => setIsMartyrsOpen(true)}
-                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
-                      title="سجل الشهداء"
-                    >
-                      <Users size={18} />
-                    </button>
-                    <button 
-                      onClick={() => setIsSettingsOpen(true)}
-                      className={`p-1.5 rounded-lg transition-colors ${theme === 'light' ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
-                      title="الإعدادات"
-                    >
-                      <Settings size={18} />
-                    </button>
-                    <button 
-                      onClick={() => setIsSidebarOpen(false)}
-                      className={`lg:hidden p-1.5 transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
-                    >
-                      <X size={18} />
-                    </button>
+                  <span className={`text-xs font-bold font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>معجم الأطهار</span>
+                </button>
+                <button 
+                  onClick={() => setIsTimelineOpen(true)}
+                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all group ${theme === 'light' ? 'bg-white hover:bg-slate-100 border border-slate-200' : 'bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50'}`}
+                >
+                  <div className={`p-2 rounded-full ${theme === 'light' ? 'bg-amber-50 text-amber-600' : 'bg-amber-900/30 text-amber-400'}`}>
+                    <Map size={20} />
                   </div>
-                </div>
+                  <span className={`text-xs font-bold font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>محطات المسير</span>
+                </button>
+                <button 
+                  onClick={() => setIsDiwanOpen(true)}
+                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all group ${theme === 'light' ? 'bg-white hover:bg-slate-100 border border-slate-200' : 'bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50'}`}
+                >
+                  <div className={`p-2 rounded-full ${theme === 'light' ? 'bg-indigo-50 text-indigo-600' : 'bg-indigo-900/30 text-indigo-400'}`}>
+                    <Feather size={20} />
+                  </div>
+                  <span className={`text-xs font-bold font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>ديوان الملحمة</span>
+                </button>
+                <button 
+                  onClick={() => setIsZiyaratOpen(true)}
+                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all group ${theme === 'light' ? 'bg-white hover:bg-slate-100 border border-slate-200' : 'bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50'}`}
+                >
+                  <div className={`p-2 rounded-full ${theme === 'light' ? 'bg-emerald-50 text-emerald-600' : 'bg-emerald-900/30 text-emerald-400'}`}>
+                    <Book size={20} />
+                  </div>
+                  <span className={`text-xs font-bold font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>زيارة الشهداء</span>
+                </button>
               </div>
 
               {/* Chapter Header */}
-              <div className={`px-6 py-3 border-b flex items-center gap-2 ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
-                <ScrollText size={18} className="text-red-500 animate-pulse" />
-                <h2 className={`text-sm font-bold font-amiri ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}>فصول الرواية المباركة</h2>
+              <div className={`px-6 py-3 border-b shrink-0 flex items-center justify-between ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
+                <div className="flex items-center gap-2">
+                  <ScrollText size={18} className="text-red-500 animate-pulse" />
+                  <h2 className={`text-sm font-bold font-amiri ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}>مسار القصة</h2>
+                </div>
+                <button 
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`lg:hidden p-1.5 transition-colors ${theme === 'light' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                >
+                  <X size={18} />
+                </button>
               </div>
+              
+              <nav className="flex-1 overflow-y-auto relative py-6 px-4">
+                <div className={`absolute top-0 bottom-0 right-[2.1rem] w-px ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-800'}`} />
+                <div className="space-y-6 relative z-10">
+                  {chapters.map((ch, idx) => {
+                    const isCurrent = currentChapterIndex === idx;
+                    const isCompleted = idx < currentChapterIndex;
+                    
+                    return (
+                      <button
+                        key={ch.id}
+                        onClick={() => {
+                          setCurrentChapterIndex(idx);
+                          setIsSidebarOpen(false);
+                        }}
+                        className={`w-full text-right flex items-start gap-4 group transition-all`}
+                      >
+                        {/* Timeline Node */}
+                        <div className="relative flex flex-col items-center shrink-0 w-10 mt-1">
+                          {isCurrent ? (
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center relative ${theme === 'light' ? 'bg-red-100' : 'bg-red-950/50'}`}>
+                              <div className="absolute inset-0 rounded-full animate-ping opacity-25 bg-red-500" />
+                              <BookOpen size={14} className="text-red-500 relative z-10" />
+                            </div>
+                          ) : isCompleted ? (
+                            <div className={`w-3 h-3 rounded-full mt-2 border-2 ${theme === 'light' ? 'bg-slate-300 border-slate-50' : 'bg-slate-600 border-slate-900'}`} />
+                          ) : (
+                            <div className={`w-3 h-3 rounded-full mt-2 border-2 ${theme === 'light' ? 'bg-transparent border-slate-300' : 'bg-transparent border-slate-700'}`} />
+                          )}
+                        </div>
 
-              <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-                {chapters.map((ch, idx) => (
-                  <button
-                    key={ch.id}
-                    onClick={() => {
-                      setCurrentChapterIndex(idx);
-                      setIsSidebarOpen(false);
-                    }}
-                    className={`w-full text-right p-4 rounded-xl transition-all flex flex-col gap-1 group ${
-                      currentChapter.id === ch.id 
-                        ? (theme === 'light' ? "bg-red-50 border border-red-200" : "bg-red-950/30 border border-red-900/50") 
-                        : (theme === 'light' ? "hover:bg-slate-100 border border-transparent" : "hover:bg-slate-800 border border-transparent")
-                    }`}
-                  >
-                    <span className={`font-amiri text-lg ${
-                      currentChapter.id === ch.id 
-                        ? (theme === 'light' ? "text-red-700" : "text-red-400")
-                        : (theme === 'light' ? "text-slate-700" : "text-slate-200")
-                    }`}>
-                      {ch.title}
-                    </span>
-                    <span className={`text-xs line-clamp-1 ${theme === 'light' ? 'text-slate-500' : 'text-slate-500'}`}>{ch.description}</span>
-                  </button>
-                ))}
+                        {/* Card */}
+                        <div className={`flex-1 p-3 rounded-xl transition-all border ${
+                          isCurrent 
+                            ? (theme === 'light' ? 'bg-white border-red-200 shadow-[0_0_15px_rgba(220,38,38,0.1)]' : 'bg-white/5 backdrop-blur-md border-red-900/50 shadow-[0_0_15px_rgba(220,38,38,0.15)]')
+                            : (theme === 'light' ? 'bg-transparent border-transparent hover:bg-slate-100/50' : 'bg-transparent border-transparent hover:bg-slate-800/50')
+                        }`}>
+                          <h3 className={`font-amiri text-lg font-bold mb-1 ${
+                            isCurrent 
+                              ? (theme === 'light' ? 'text-red-700' : 'text-red-400')
+                              : (theme === 'light' ? 'text-slate-700' : 'text-slate-300 group-hover:text-slate-200')
+                          }`}>
+                            {ch.title}
+                          </h3>
+                          <p className={`text-xs line-clamp-2 leading-relaxed ${
+                            isCurrent
+                              ? (theme === 'light' ? 'text-red-900/60' : 'text-red-200/50')
+                              : (theme === 'light' ? 'text-slate-500' : 'text-slate-500 group-hover:text-slate-400')
+                          }`}>
+                            {ch.description}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </nav>
-
+              
               <div className={`p-6 border-t ${theme === 'light' ? 'border-slate-200' : 'border-slate-800'}`}>
                 <div className={`rounded-2xl p-4 text-center ${theme === 'light' ? 'bg-slate-100' : 'bg-slate-800/50'}`}>
                   <p className="text-xs text-slate-500 mb-1">المصدر</p>
@@ -272,27 +287,27 @@ export default function App() {
           </AnimatePresence>
 
           {/* Navigation Controls */}
-          <div className="max-w-4xl mx-auto px-6 py-8 flex items-center justify-between">
+          <div className="max-w-4xl mx-auto px-6 pt-12 pb-24 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
             <button
               onClick={goToNextChapter}
               disabled={currentChapterIndex === chapters.length - 1}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-amiri text-lg transition-all ${
+              className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-amiri text-lg transition-all border backdrop-blur-md w-full md:w-auto justify-center ${
                 currentChapterIndex === chapters.length - 1
-                  ? "opacity-50 cursor-not-allowed bg-slate-900 text-slate-500"
-                  : (theme === 'light' ? "bg-red-100 hover:bg-red-200 text-red-800 border border-red-300" : "bg-red-950/40 hover:bg-red-900/60 text-red-100 border border-red-900/50 hover:border-red-500/50")
+                  ? "opacity-50 cursor-not-allowed bg-transparent border-transparent text-slate-500"
+                  : (theme === 'light' ? "bg-white/50 hover:bg-red-50 text-red-800 border-red-200 hover:border-red-300" : "bg-white/5 hover:bg-white/10 text-red-100 border-red-900/30 hover:border-red-500/50 shadow-lg")
               }`}
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={20} className={currentChapterIndex !== chapters.length - 1 ? 'animate-pulse' : ''} />
               الفصل التالي
             </button>
             
             <button
               onClick={goToPrevChapter}
               disabled={currentChapterIndex === 0}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-amiri text-lg transition-all ${
+              className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-amiri text-lg transition-all border backdrop-blur-md w-full md:w-auto justify-center ${
                 currentChapterIndex === 0
-                  ? "opacity-50 cursor-not-allowed bg-slate-900 text-slate-500"
-                  : (theme === 'light' ? "bg-white hover:bg-slate-100 text-slate-800 border border-slate-300" : "bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-600")
+                  ? "opacity-50 cursor-not-allowed bg-transparent border-transparent text-slate-500"
+                  : (theme === 'light' ? "bg-transparent hover:bg-slate-100 text-slate-600 border-slate-300 hover:border-slate-400" : "bg-transparent hover:bg-white/5 text-slate-400 border-slate-800 hover:border-slate-600")
               }`}
             >
               الفصل السابق
@@ -300,15 +315,15 @@ export default function App() {
             </button>
           </div>
 
-          <footer className={`max-w-4xl mx-auto px-6 py-12 border-t text-center ${theme === 'light' ? 'border-slate-200 text-slate-500' : 'border-slate-900/50 text-slate-600'} flex flex-col items-center gap-4`}>
-            <span className="text-[11px] font-bold tracking-wide opacity-25 select-none font-sans mb-2">
-              نسألكم الدعاء ، أثَر | ATHAR
-            </span>
+          <footer className={`max-w-4xl mx-auto px-6 pb-20 pt-8 border-t text-center ${theme === 'light' ? 'border-slate-200 text-slate-500' : 'border-slate-900/50 text-slate-600'} flex flex-col items-center gap-4 relative z-10`}>
             {chapters[currentChapterIndex].quote && (
-              <p className="text-sm italic font-amiri opacity-75">
+              <p className={`text-lg italic font-amiri ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
                 "{chapters[currentChapterIndex].quote}"
               </p>
             )}
+            <span className="text-[11px] font-bold tracking-widest uppercase opacity-30 select-none font-sans mt-4">
+              نسألكم الدعاء ، أثَر | ATHAR
+            </span>
           </footer>
         </main>
       </div>
@@ -644,6 +659,16 @@ export default function App() {
       <AnimatePresence>
         {isAboutOpen && (
           <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} theme={theme} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isDiwanOpen && (
+          <DiwanModal theme={theme} onClose={() => setIsDiwanOpen(false)} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isZiyaratOpen && (
+          <ZiyaratModal theme={theme} onClose={() => setIsZiyaratOpen(false)} />
         )}
       </AnimatePresence>
 

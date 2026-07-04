@@ -140,13 +140,13 @@ export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = 
         className="max-w-4xl mx-auto px-6 py-12 lg:py-20 relative z-10"
         id="story-container"
       >
-        <header className="mb-12 text-center">
+        <header className="mb-12 text-center mt-6">
           {chapter.description && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className={`inline-block px-5 py-1.5 rounded-full text-sm font-medium mb-6 border ${theme === 'light' ? 'bg-red-50 text-red-900/70 border-red-900/10' : 'bg-red-950/20 text-red-400/70 border-red-900/30'}`}
+              className={`inline-block px-5 py-1.5 rounded-full text-sm font-medium mb-8 border backdrop-blur-md ${theme === 'light' ? 'bg-red-50/80 text-red-900 border-red-200 shadow-[0_0_15px_rgba(220,38,38,0.1)]' : 'bg-red-950/20 text-red-300 border-red-900/40 shadow-[0_0_15px_rgba(220,38,38,0.2)]'}`}
             >
               {chapter.description}
             </motion.div>
