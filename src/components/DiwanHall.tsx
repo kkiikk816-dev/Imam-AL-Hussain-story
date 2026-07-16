@@ -1,56 +1,41 @@
-import { useState } from "react";
-import { ChevronRight, ScrollText, BookOpen, Quote, PenTool, Feather } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronRight, Feather, Quote, ChevronDown, ChevronUp, Search, PenTool, BookOpen, ScrollText, Star } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { poems } from "../data/poems";
 
 interface DiwanHallProps {
   onBack: () => void;
 }
 
-const poems = [
-    { title: "أرجوزة عمرو بن جنادة (رض)", verse: "أَضِقِ الْخِنَاقَ مِنِ ابْنِ هِنْدٍ وَارْمِهِ * * * مِنْ عَامِهِ بِفَوَارِسِ الْأَنْصَارِ\nوَمُهَاجِرِينَ مُخَضَّبِينَ رِمَاحَهُمْ * * * تَحْتَ الْعَجَاجَةِ مِنْ دَمِ الْكُفَّارِ\nخُضِبَتْ عَلَى عَهْدِ النَّبِيِّ مُحَمَّدٍ * * * فَالْيَوْمَ تُخْضَبُ مِنْ دَمِ الْفُجَّارِ\nوَالْيَوْمَ تُخْضَبُ مِنْ دِمَاءِ أَرَاذِلٍ * * * رَفَضُوا الْقُرْآنَ لِنُصْرَةِ الْأَشْرَارِ\nطَلَبُوا بِثَأْرِهِمْ بِبَدْرٍ إِذْ أَتَوْا * * * بِالْمُرْهَفَاتِ وَبِالْقَنَا الْخَطَّارِ\nوَاللَّهِ رَبِّي لَا أَزَالُ مُضَارِباً * * * فِي الْفَاسِقِينَ بِمُرْهَفٍ بَتَّارِ\nهَذَا عَلَى الْأَزْدِيِّ حَقٌّ وَاجِبٌ * * * فِي كُلِّ يَوْمٍ تَعَانُقٍ وَكِرَارِ", type: "poetry" },
-    { title: "أرجوزة عمير بن عبد الله المذحجي (رض)", verse: "قَدْ عَلِمَتْ سَعْدٌ وَحَيُّ مَذْحِجٍ * * * أَنِّي لَدَى الْهَيْجَاءِ لَيْثٌ مُحْرَجُ\nأَعْلُو بِسَيْفِي هَامَةَ الْمُدَجَّجِ * * * وَأَتْرُكُ الْقِرْنَ لَدَى التَّعَرُّجِ\nفَرِيسَةَ الضَّبْعِ الْأَزَلِّ الْأَعْرَجِ", type: "poetry" },
-    { title: "أرجوزة نافع بن هلال الجملي (رض)", verse: "أَرْمِي بِهَا مُعْلَمَةً أَفْوَاقُهَا * * * وَالنَّفْسُ لَا يَنْفَعُهَا إِشْفَاقُهَا\nمَسْمُومَةً تَجْرِي بِهَا أَخْفَاقُهَا * * * لِيَمْلَأَنَّ أَرْضَهَا رِشَاقُهَا\n\nأَنَا الْغُلَامُ الْيَمَنِيُّ الْبَجَلِيُّ * * * دِينِي عَلَى دِينِ حُسَيْنٍ وَعَلِيٍّ\nإِنْ أُقْتَلِ الْيَوْمَ فَهَذَا أَمَلِي * * * فَذَاكَ رَأْيِي وَأُلَاقِي عَمَلِي", type: "poetry" },
-    { title: "أرجوزة سعد بن حنظلة التميمي (رض)", verse: "صَبْراً عَلَى الْأَسْيَافِ وَالْأَسِنَّةِ * * * صَبْراً عَلَيْهَا لِدُخُولِ الْجَنَّةِ\nوَحُورِ عِينٍ نَاعِمَاتٍ هُنَّهُ * * * لِمَنْ يُرِيدُ الْفَوْزَ لَا بِالظِّنَّةِ\nيَا نَفْسُ لِلرَّاحَةِ فَاجْهَدِنَّهُ * * * وَفِي طِلَابِ الْخَيْرِ فَارْغَبِنَّهُ", type: "poetry" },
-    { title: "أرجوزة جنادة بن الحارث الأنصاري (رض)", verse: "أَنَا جُنَادٌ وَأَنَا ابْنُ الْحَارِثِ * * * لَسْتُ بِخَوَّارٍ وَلَا بِنَاكِثِ\nعَنْ بَيْعَتِي حَتَّى يَرِثَنِي وَارِثٌ * * * الْيَوْمَ شِلْوِي فِي الصَّعِيدِ مَاكِثٌ", type: "poetry" },
-    { title: "أرجوزة أنس بن حارث الكاهلي (رض)", verse: "مُبَاشِرُو الْمَوْتِ بِطَعْنٍ آنِ * * * لَسْنَا نَرَى الْعَجْزَ عَنِ الطِّعَانِ\nآلُ عَلِيٍّ شِيعَةُ الرَّحْمَنِ * * * آلُ زِيَادٍ شِيعَةُ الشَّيْطَانِ", type: "poetry" },
-    { title: "أرجوزة عمرو بن مطاع الجعفي (رض)", verse: "أَنَا ابْنُ جُعْفٍ وَأَبِي مُطَاعُ * * * وَفِي يَمِينِي مُرْهَفٌ قَطَّاعُ\nوَأَسْمَرٌ فِي رَأْسِهِ لَمَّاعُ * * * يُرَى لَهُ مِنْ ضَوْئِهِ شُعَاعُ\nالْيَوْمَ قَدْ طَابَ لَنَا الْقِرَاعُ * * * دُونَ حُسَيْنٍ الضَّرْبُ وَالسِّطَاعُ\nيُرْجَى بِذَاكَ الْفَوْزُ وَالدِّفَاعُ * * * عَنْ حَرِّ نَارٍ حِينَ لَا انْتِفَاعُ", type: "poetry" },
-    { title: "أرجوزة يحيى بن سليم المازني (رض)", verse: "لَأَضْرِبَنَّ الْقَوْمَ ضَرْباً فَيْصَلًا * * * ضَرْباً شَدِيداً فِي الْعُدَاةِ مُعْجَلًا\nلَا عَاجِزاً فِيهَا وَلَا مُوَلْوِلًا * * * وَلَا أَخَافُ الْيَوْمَ مَوْتاً مُقْبِلًا\nلَكِنَّنِي كَاللَّيْثِ أَحْمِي أَشْبُلًا", type: "poetry" },
-    { title: "أرجوزة قرة بن أبي قرة الغفاري (رض)", verse: "قَدْ عَلِمَتْ حَقّاً بَنُو غِفَارِ * * * وَخِنْدِفٌ بَعْدَ بَنِي نِزَارِ\nبِأَنَّنِي اللَّيْثُ لَدَى الْغِيَارِ * * * لَأَضْرِبَنَّ مَعْشَرَ الْفُجَّارِ\nبِكُلِّ عَضْبٍ ذَكَرٍ بَتَّارِ * * * ضَرْباً وَجِيعاً عَنْ بَنِي الْأَخْيَارِ\nرَهْطِ النَّبِيِّ السَّادَةِ الْأَبْرَارِ", type: "poetry" },
-    { title: "أرجوزة مالك بن أنس المالكي (رض)", verse: "قَدْ عَلِمَتْ مَالِكُهَا وَالدُّودَانُ * * * وَالْخِنْدَفِيُّونَ وَقَيْسُ عَيْلَانُ\nبِأَنَّ قَوْمِي آفَةُ الْأَقْرَانِ * * * لَدَى الْوَغَى وَسَادَةُ الْفُرْسَانِ", type: "poetry" },
-    { title: "أرجوزة عبد الله بن مسلم بن عقيل (ع)", verse: "الْيَوْمَ أَلْقَى مُسْلِماً وَهُوَ أَبِي * * * وَفِتْيَةً بَادُوا عَلَى دِينِ النَّبِيِّ\nلَيْسُوا بِقَوْمٍ عُرِفُوا بِالْكَذِبِ * * * لَكِنْ خِيَارٌ وَكِرَامُ النَّسَبِ\nمِنْ هَاشِمِ السَّادَاتِ أَهْلِ الْحَسَبِ", type: "poetry" },
-    { title: "أرجوزة عمر بن علي بن أبي طالب (ع)", verse: "أَضْرِبُكُمْ وَلَا أَرَى فِيكُمْ زَحْرَ * * * ذَاكَ الشَّقِيُّ بِالنَّبِيِّ قَدْ كَفَرَ\nيَا زَحْرُ يَا زَحْرُ تَدَانَ مِنْ عُمَرَ * * * لَعَلَّكَ الْيَوْمَ تَبُوأُ مِنْ سَقَرَ\nشَرَّ مَكَانٍ فِي حَرِيقٍ وَسَعَرٍ * * * لِأَنَّكَ الْجَاحِدُ يَا شَرَّ الْبَشَرِ", type: "poetry" },
-    { title: "خطبة الإمام الحسين (ع) في يوم عاشوراء", verse: "تَبّاً لَكُمْ أَيَّتُهَا الْجَمَاعَةُ وَتَرَحاً، أَ حِينَ اسْتَصْرَخْتُمُونَا وَلِهِينَ مُتَحَيِّرِينَ، فَأَصْرَخْنَاكُمْ مُؤَدِّينَ مُسْتَعِدِّينَ، سَلَلْتُمْ عَلَيْنَا سَيْفاً فِي رِقَابِنَا وَحَشَشْتُمْ عَلَيْنَا نَارَ الْفِتَنِ جَنَاهَا عَدُوُّكُمْ وَعَدُوُّنَا... أَلَا إِنَّ الدَّعِيَّ ابْنَ الدَّعِيِّ قَدْ رَكَزَ بَيْنَ اثْنَتَيْنِ بَيْنَ السَّلَّةِ وَالذِّلَّةِ، وَهَيْهَاتَ مِنَّا الذِّلَّةُ يَأْبَى اللَّهُ ذَلِكَ لَنَا وَرَسُولُهُ وَالْمُؤْمِنُونَ، وَحُجُورٌ طَابَتْ وَطَهُرَتْ وَأُنُوفٌ حَمِيَّةٌ وَنُفُوسٌ أَبِيَّةٌ...", type: "quote" },
-    { title: "دعاء الإمام الحسين (ع) صبيحة عاشوراء", verse: "اللَّهُمَّ أَنْتَ ثِقَتِي فِي كُلِّ كَرْبٍ، وَرَجَائِي فِي كُلِّ شِدَّةٍ، وَأَنْتَ لِي فِي كُلِّ أَمْرٍ نَزَلَ بِي ثِقَةٌ وَعُدَّةٌ، كَمْ مِنْ كَرْبٍ يَضْعُفُ عَنْهُ الْفُؤَادُ، وَتَقِلُّ فِيهِ الْحِيلَةُ، وَيَخْذُلُ فِيهِ الصَّدِيقُ، وَيَشْمَتُ فِيهِ الْعَدُوُّ، أَنْزَلْتُهُ بِكَ وَشَكَوْتُهُ إِلَيْكَ، رَغْبَةً مِنِّي إِلَيْكَ عَمَّنْ سِوَاكَ، فَفَرَّجْتَهُ وَكَشَفْتَهُ، فَأَنْتَ وَلِيُّ كُلِّ نِعْمَةٍ، وَصَاحِبُ كُلِّ حَسَنَةٍ، وَمُنْتَهَى كُلِّ رَغْبَةٍ.", type: "quote" },
-    { title: "أرجوزة الحسين بن علي (ع)", verse: "الْمَوْتُ خَيْرٌ مِنْ رُكُوبِ الْعَارِ * * * وَالْعَارُ أَوْلَى مِنْ دُخُولِ النَّارِ\nأَنَا الْحُسَيْنُ بْنُ عَلِيٍّ * * * آلَيْتُ أَنْ لَا أَنْثَنِي\nأَحْمِي عِيَالَاتِ أَبِي * * * أَمْضِي عَلَى دِينِ النَّبِيِّ", type: "poetry" },
-    { title: "أرجوزة العباس بن علي (ع)", verse: "لَا أَرْهَبُ الْمَوْتَ إِذَا الْمَوْتُ رَقَا * * * حَتَّى أُوَارَى فِي الْمَصَالِيتِ لُقَى\nنَفْسِي لِنَفْسِ الْمُصْطَفَى الطُّهْرِ وَقَا * * * إِنِّي أَنَا الْعَبَّاسُ أَغْدُو بِالسِّقَا\nوَ لَا أَخَافُ الشَّرَّ يَوْمَ الْمُلْتَقَى\nوَاللَّهِ إِنْ قَطَعْتُمُ يَمِينِي * * * إِنِّي أُحَامِي أَبَداً عَنْ دِينِي\nوَعَنْ إِمَامٍ صَادِقِ الْيَقِينِ * * * نَجْلِ النَّبِيِّ الطَّاهِرِ الْأَمِينِ", type: "poetry" },
-    { title: "أرجوزة القاسم بن الحسن (ع)", verse: "إِنْ تُنْكِرُونِي فَأَنَا ابْنُ الْحَسَنِ * * * سِبْطِ النَّبِيِّ الْمُصْطَفَى وَالْمُؤْتَمَنِ\nهَذَا حُسَيْنٌ كَالْأَسِيرِ الْمُرْتَهَنِ * * * بَيْنَ أُنَاسٍ لَا سُقُوا صَوْبَ الْمُزْنِ", type: "poetry" },
-    { title: "أرجوزة علي بن الحسين الأكبر (ع)", verse: "أَنَا عَلِيُّ بْنُ الْحُسَيْنِ بْنِ عَلِيٍّ * * * نَحْنُ وَ بَيْتِ اللَّهِ أَوْلَى بِالنَّبِيِّ\nأَطْعَنُكُمْ بِالرُّمْحِ حَتَّى يَنْثَنِي * * * أَضْرِبُكُمْ بِالسَّيْفِ أَحْمِي عَنْ أَبِي\nضَرْبَ غُلَامٍ هَاشِمِيٍّ عَلَوِيٍّ * * * وَ اللَّهِ لَا يَحْكُمُ فِينَا ابْنُ الدَّعِيِّ", type: "poetry" },
-    { title: "رثاء وهب بن عبد الله الكلبي", verse: "إِنِّي زَعِيمٌ لَكِ أُمَّ وَهْبٍ * * * بِالطَّعْنِ فِيهِمْ تَارَةً وَالضَّرْبِ\nضَرْبَ غُلَامٍ مُؤْمِنٍ بِالرَّبِّ * * * حَتَّى يُذِيقَ الْقَوْمَ مُرَّ الْحَرْبِ\nإِنِّي امْرُؤٌ ذُو مِرَّةٍ وَعَصْبٍ * * * وَلَسْتُ بِالْخَوَّارِ عِنْدَ النَّكْبِ\nحَسْبِي إِلَهِي مِنْ عَلِيمٍ حَسْبِي", type: "poetry" },
-    { title: "أرجوزة برير بن خضير", verse: "أَنَا بُرَيْرٌ وَأَبِي خُضَيْرُ * * * لَيْثٌ يَرُوعُ الْأَسَدَ عِنْدَ الزُّئْرِ\nيُعْرَفُ فِينَا الْخَيْرُ أَهْلَ الْخَيْرِ * * * أَضْرِبُكُمْ وَلَا أَرَى مِنْ ضَيْرِ\nكَذَاكَ فِعْلُ الْخَيْرِ مِنْ بُرَيْرِ", type: "poetry" },
-    { title: "وداع الإمام الحسين (ع) لعياله", verse: "يَا سُكَيْنَةُ يَا فَاطِمَةُ يَا زَيْنَبُ يَا أُمَّ كُلْثُومٍ، عَلَيْكُنَّ مِنِّي السَّلَامُ. فَنَادَتْهُ سُكَيْنَةُ: يَا أَبَتِ اسْتَسْلَمْتَ لِلْمَوْتِ؟ فَقَالَ: كَيْفَ لَا يَسْتَسْلِمُ مَنْ لَا نَاصِرَ لَهُ وَلَا مُعِينَ. فَقَالَتْ: يَا أَبَتِ رُدَّنَا إِلَى حَرَمِ جَدِّنَا. فَقَالَ: هَيْهَاتَ، لَوْ تُرِكَ الْقَطَا لَنَامَ.", type: "quote" },
-    { title: "ندبة الحوراء زينب (ع) عند الجسد الطاهر", verse: "وَا مُحَمَّدَاهُ، صَلَّى عَلَيْكَ مَلِيكُ السَّمَاءِ، هَذَا حُسَيْنٌ بِالْعَرَاءِ، مُرَمَّلٌ بِالدِّمَاءِ، مُقَطَّعُ الْأَعْضَاءِ، وَبَنَاتُكَ سَبَايَا إِلَى اللَّهِ الْمُشْتَكَى وَإِلَى مُحَمَّدٍ الْمُصْطَفَى وَإِلَى عَلِيٍّ الْمُرْتَضَى وَإِلَى حَمْزَةَ سَيِّدِ الشُّهَدَاءِ وَا مُحَمَّدَاهُ هَذَا حُسَيْنٌ بِالْعَرَاءِ يَسْفِي عَلَيْهِ الصَّبَا قَتِيلُ أَوْلَادِ الْبَغَايَا يَا حُزْنَاهْ يَا كَرْبَاهْ الْيَوْمَ مَاتَ جَدِّي رَسُولُ اللَّهِ يَا أَصْحَابَ مُحَمَّدَاهْ هَؤُلَاءِ ذُرِّيَّةُ الْمُصْطَفَى يُسَاقُونَ سَوْقَ السَّبَايَا.", type: "quote" },
-    { title: "أبيات الإمام الحسين (ع) في ذم الدنيا", verse: "يَا دَهْرُ أُفٍّ لَكَ مِنْ خَلِيلٍ * * * كَمْ لَكَ بِالْإِشْرَاقِ وَالْأَصِيلِ\nمِنْ صَاحِبٍ وَطَالِبٍ قَتِيلٍ * * * وَالدَّهْرُ لَا يَقْنَعُ بِالْبَدِيلِ\nوَإِنَّمَا الْأَمْرُ إِلَى الْجَلِيلِ * * * وَكُلُّ حَيٍّ سَالِكٌ سَبِيلِي", type: "poetry" },
-    { title: "أرجوزة الحر بن يزيد الرياحي (رض)", verse: "إِنِّي أَنَا الْحُرُّ وَمَأْوَى الضَّيْفِ * * * أَضْرِبُ فِي أَعْنَاقِكُمْ بِالسَّيْفِ\nعَنْ خَيْرِ مَنْ حَلَّ بِأَرْضِ الْخَيْفِ * * * أَضْرِبُكُمْ وَلَا أَرَى مِنْ حَيْفِ", type: "poetry" },
-    { title: "أرجوزة زهير بن القين (رض)", verse: "أَنَا زُهَيْرٌ وَأَنَا ابْنُ الْقَيْنِ * * * أَذُودُكُمْ بِالسَّيْفِ عَنْ حُسَيْنِ\nإِنَّ حُسَيْناً أَحَدُ السِّبْطَيْنِ * * * مِنْ عِتْرَةِ الْبَرِّ التَّقِيِّ الزَّيْنِ\nذَاكَ رَسُولُ اللَّهِ غَيْرُ الْمَيْنِ * * * أَضْرِبُكُمْ وَلَا أَرَى مِنْ شَيْنِ", type: "poetry" },
-    { title: "أرجوزة حبيب بن مظاهر (رض)", verse: "أَنَا حَبِيبٌ وَأَبِي مُظَهَّرُ * * * فَارِسُ هَيْجَاءَ وَحَرْبٍ تَسْعَرُ\nوَأَنْتُمْ عِنْدَ الْعَدِيدِ أَكْثَرُ * * * وَنَحْنُ أَعْلَى حُجَّةً وَأَظْهَرُ\nوَأَنْتُمْ عِنْدَ الْوَفَاءِ أَغْدَرُ * * * وَنَحْنُ أَوْفَى مِنْكُمْ وَأَصْبَرُ", type: "poetry" }
-];
-
 export default function DiwanHall({ onBack }: DiwanHallProps) {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [expandedItems, setExpandedItems] = useState<{ [key: number]: boolean }>({});
+  const [activeCategory, setActiveCategory] = useState<string>("poetry");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    const saved = localStorage.getItem('karbala_diwan_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('karbala_diwan_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    setFavorites(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
 
   const categories = [
-    { id: "poetry", label: "الأراجيز والأشعار", icon: <Feather size={20} />, count: poems.filter(p => p.type === 'poetry').length },
-    { id: "quote", label: "الخطب والأدعية", icon: <Quote size={20} />, count: poems.filter(p => p.type === 'quote').length },
+    { id: "poetry", label: "الأراجيز والأشعار", icon: <Feather size={16} />, count: poems.filter(p => p.type === 'poetry').length },
+    { id: "quote", label: "الخطب والأدعية", icon: <Quote size={16} />, count: poems.filter(p => p.type === 'quote').length },
+    { id: "story", label: "قصص ومواقف", icon: <BookOpen size={16} />, count: poems.filter(p => p.type === 'story').length },
+    { id: "favorites", label: "المفضلة", icon: <Star size={16} />, count: favorites.length },
   ];
 
   const filteredPoems = activeCategory 
-    ? poems.filter(p => p.type === activeCategory)
+    ? (activeCategory === "favorites" ? poems.filter((_, idx) => favorites.includes(idx)) : poems.filter(p => p.type === activeCategory))
     : [];
-
-  const toggleExpand = (idx: number) => {
-    setExpandedItems(prev => ({ ...prev, [idx]: !prev[idx] }));
-  };
 
   return (
     <motion.div 
@@ -73,86 +58,88 @@ export default function DiwanHall({ onBack }: DiwanHallProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 to-transparent opacity-20 pointer-events-none" />
-        
-        <div className="max-w-5xl mx-auto p-6 md:p-12 relative z-10">
-          
-          {/* Categories / Shelves */}
-          <div className="flex flex-wrap justify-center gap-6 mb-16">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Search & Filter Bar (Compact) */}
+        <div className="flex-shrink-0 p-4 border-b border-blue-900/20 bg-black/30 flex flex-col gap-4 z-10 shadow-md">
+          {/* Horizontal Tabs */}
+          <div className="flex items-center justify-center gap-2 overflow-x-auto hide-scrollbar pb-1 max-w-2xl mx-auto w-full">
             {categories.map(cat => (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-                className={`flex flex-col items-center gap-3 p-6 min-w-[200px] border-b-4 transition-all duration-300 ${
+                onClick={() => { setActiveCategory(cat.id); setExpandedId(null); }}
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-1.5 rounded-full transition-all border text-sm font-sans font-bold ${
                   activeCategory === cat.id 
-                    ? 'border-blue-500 bg-blue-900/20 shadow-[0_10px_20px_rgba(59,130,246,0.1)]' 
-                    : 'border-slate-800 bg-slate-900/30 hover:border-blue-800 hover:bg-slate-900/50'
+                    ? 'bg-blue-900/40 border-blue-500/50 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.2)]' 
+                    : 'bg-black/40 border-blue-900/30 text-slate-400 hover:bg-white/5'
                 }`}
               >
-                <div className={`p-4 rounded-full ${activeCategory === cat.id ? 'bg-blue-900/50 text-blue-400' : 'bg-slate-800 text-slate-400'}`}>
-                  {cat.icon}
-                </div>
-                <h3 className="text-2xl font-amiri font-bold text-slate-200">{cat.label}</h3>
-                <span className="text-sm font-sans text-slate-500">{cat.count} نصوص</span>
+                {cat.icon}
+                <span>{cat.label} ({cat.count})</span>
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Texts Area */}
-          <AnimatePresence mode="wait">
-            {activeCategory && (
-              <motion.div 
-                key={activeCategory}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-8"
-              >
-                {filteredPoems.map((poem, idx) => {
-                  const isExpanded = expandedItems[idx];
-                  const shouldTruncate = poem.verse.length > 250;
-                  const displayText = (shouldTruncate && !isExpanded) ? poem.verse.substring(0, 250) + '...' : poem.verse;
+        {/* Main Content - Masonry/Grid Layout */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 to-transparent relative">
+          <div className="absolute inset-0 bg-[#090b14]/90 pointer-events-none" />
+          
+          <div className="relative z-10 columns-1 md:columns-2 gap-4 max-w-7xl mx-auto space-y-4">
+            {filteredPoems.map((poem, idx) => {
+              const isExpanded = expandedId === idx;
+              const shouldTruncate = poem.verse.length > 150;
+              const displayText = (shouldTruncate && !isExpanded) ? poem.verse.substring(0, 150) + '...' : poem.verse;
 
-                  return (
-                    <div key={idx} className="bg-slate-900/40 border border-blue-900/20 p-8 rounded-sm relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-blue-600 to-transparent" />
-                      
-                      <h4 className="text-2xl font-amiri font-bold text-blue-300 mb-6 flex items-center gap-3">
-                        <PenTool size={18} className="text-slate-500" />
-                        {poem.title}
-                      </h4>
-                      
-                      <p className={`text-2xl leading-loose font-amiri ${
-                        poem.type === 'poetry' ? 'whitespace-pre-line text-amber-500/90' : 'text-slate-300'
-                      }`}>
-                        {displayText}
-                      </p>
+              return (
+                <div 
+                  key={idx}
+                  className="break-inside-avoid bg-slate-900/40 border border-blue-900/20 p-6 rounded-md relative overflow-hidden transition-all duration-300 hover:border-blue-500/30"
+                  onClick={() => shouldTruncate && setExpandedId(isExpanded ? null : idx)}
+                >
+                  <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-blue-600/50 to-transparent" />
+                  
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="text-xl font-amiri font-bold text-blue-300 flex items-center gap-2">
+                      <PenTool size={16} className="text-slate-500" />
+                      {poem.title}
+                    </h4>
+                    
+                    <button 
+                      onClick={(e) => {
+                        const globalIdx = poems.findIndex(p => p.title === poem.title && p.verse === poem.verse);
+                        if (globalIdx !== -1) toggleFavorite(e, globalIdx);
+                      }}
+                      className={`p-1.5 rounded-full transition-colors ${favorites.includes(poems.findIndex(p => p.title === poem.title && p.verse === poem.verse)) ? 'text-amber-400 bg-amber-400/10' : 'text-slate-600 hover:text-slate-400 hover:bg-slate-800'}`}
+                    >
+                      <Star size={18} fill={favorites.includes(poems.findIndex(p => p.title === poem.title && p.verse === poem.verse)) ? "currentColor" : "none"} />
+                    </button>
+                  </div>
+                  
+                  <p className={`text-lg md:text-xl leading-loose font-amiri transition-all duration-300 ${
+                    poem.type === 'poetry' ? 'whitespace-pre-line text-amber-500/90' : 'text-slate-300 text-justify'
+                  }`}>
+                    {displayText}
+                  </p>
 
-                      {shouldTruncate && (
-                        <div className="mt-8 flex justify-center border-t border-blue-900/20 pt-6">
-                          <button 
-                            onClick={() => toggleExpand(idx)}
-                            className="text-sm font-bold tracking-wide text-blue-400 hover:text-blue-300 transition-colors px-6 py-2 rounded-full border border-blue-900/50 hover:bg-blue-900/20"
-                          >
-                            {isExpanded ? 'طي النص' : 'إظهار النص كاملاً'}
-                          </button>
-                        </div>
-                      )}
+                  {shouldTruncate && (
+                    <div className="mt-4 pt-4 flex justify-center items-center text-blue-500 border-t border-blue-900/20 cursor-pointer">
+                      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                      <span className="mr-2 text-xs font-sans">
+                        {isExpanded ? 'طي النص' : 'إظهار النص كاملاً'}
+                      </span>
                     </div>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-          {!activeCategory && (
-            <div className="text-center py-20 opacity-50">
+          {filteredPoems.length === 0 && (
+            <div className="text-center py-20 opacity-50 relative z-10">
               <BookOpen size={64} className="mx-auto mb-6 text-slate-700" />
-              <p className="text-xl font-amiri text-slate-400">اختر من الرفوف أعلاه لاستعراض النصوص</p>
+              <p className="text-xl font-amiri text-slate-400">لا توجد نصوص في هذا القسم</p>
             </div>
           )}
-
         </div>
       </div>
     </motion.div>

@@ -8,12 +8,29 @@ interface StoryViewProps {
   fontSizeClass?: string;
   theme?: string;
   key?: string | number;
+  highlightText?: string | null;
 }
 
-export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = "dark" }: StoryViewProps) {
+export default function StoryView({ chapter, fontSizeClass = "text-xl", theme = "dark", highlightText }: StoryViewProps) {
   const [sharePos, setSharePos] = useState<{ x: number; y: number } | null>(null);
   const [selectedText, setSelectedText] = useState("");
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (highlightText) {
+      setTimeout(() => {
+        const elements = Array.from(document.querySelectorAll('#story-body p, #story-body h3, #story-body span'));
+        const target = elements.find(el => el.textContent && el.textContent.includes(highlightText));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.classList.add('bg-amber-500/30', 'rounded-lg', 'transition-colors', 'duration-1000', 'p-2');
+          setTimeout(() => {
+            target.classList.remove('bg-amber-500/30', 'p-2');
+          }, 3000);
+        }
+      }, 500);
+    }
+  }, [highlightText, chapter]);
 
   useEffect(() => {
     const handleSelection = () => {
